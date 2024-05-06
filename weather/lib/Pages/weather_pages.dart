@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:weather/models/weather_model.dart';
 import 'package:weather/services/weather_service.dart';
 
@@ -48,6 +49,10 @@ class _MyWidgetState extends State<WeatherPage> {
             children: [
               // Display city name or "loading city.." if data is not available
               Text(_weather?.cityname ?? "loading city.."),
+
+              //Animation
+
+              Lottie.asset('assets/foggy.json'),
 
               // Display temperature in degrees Celsius or an empty string if data is not available
               Text('${_weather?.temperature?.round() ?? ""}°C'),
