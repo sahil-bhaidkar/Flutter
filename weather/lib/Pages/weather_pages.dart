@@ -10,31 +10,50 @@ class WeatherPage extends StatefulWidget {
 }
 
 class _MyWidgetState extends State<WeatherPage> {
-  //api key
+  // API key for weather service
+  final _weatherService = WeatherService('6513761530470cfadae354e51ecba399');
 
-  final _weatherService = WeatherService([apiKey]);
+  // Weather object to store weather data
   Weather? _weather;
 
-  //fetch weather
-
-  _fetchweather() async {
-    //get curr city
+  // Fetch weather data
+  _fetchWeather() async {
+    // Get current city name
     String cityName = await _weatherService.getCurrentCity();
 
-    // get weather for city
-
+    // Get weather for the current city
     try {
-      final Weather = await _weatherService.getWeather(cityName);
+      final weather = await _weatherService.getWeather(cityName);
       setState(() {
-        _weather = Weather;
+        _weather = weather;
       });
     } catch (e) {
       print(e);
     }
   }
 
+  // Initialize state and fetch weather data
+  @override
+  void initState() {
+    super.initState();
+    _fetchWeather();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const Scaffold();
+    return Scaffold(
+      body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center, // Corrected property name
+            children: [
+              // Display city name or "loading city.." if data is not available
+              Text(_weather?.cityname ?? "loading city.."),
+
+              // Display temperature in degrees Celsius or an empty string if data is not available
+              Text('${_weather?.temperature?.round() ?? ""}°C'),
+            ],
+          )
+      ),
+    );
   }
 }
