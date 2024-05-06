@@ -4,25 +4,24 @@ import 'package:weather/models/weather_model.dart';
 import 'package:weather/services/weather_service.dart';
 
 class WeatherPage extends StatefulWidget {
-  const WeatherPage({super.key});
+  const WeatherPage({Key? key}) : super(key: key);
 
   @override
-  State<WeatherPage> createState() => _MyWidgetState();
+  State<WeatherPage> createState() => _WeatherPageState();
 }
 
-class _MyWidgetState extends State<WeatherPage> {
-  // API key for weather service
+class _WeatherPageState extends State<WeatherPage> {
   final _weatherService = WeatherService('6513761530470cfadae354e51ecba399');
-
-  // Weather object to store weather data
   Weather? _weather;
 
-  // Fetch weather data
-  _fetchWeather() async {
-    // Get current city name
-    String cityName = await _weatherService.getCurrentCity();
+  @override
+  void initState() {
+    super.initState();
+    _fetchWeather();
+  }
 
-    // Get weather for the current city
+  _fetchWeather() async {
+    String cityName = await _weatherService.getCurrentCity();
     try {
       final weather = await _weatherService.getWeather(cityName);
       setState(() {
@@ -33,31 +32,41 @@ class _MyWidgetState extends State<WeatherPage> {
     }
   }
 
-  // Initialize state and fetch weather data
-  @override
-  void initState() {
-    super.initState();
-    _fetchWeather();
+  String getWeatherAnimation(String? mainCondition) {
+    // Handling different weather conditions with Lottie animations
+    if (mainCondition == null) return 'assets/sunny.json'; // Default animation for unknown condition
+    switch (mainCondition.toLowerCase()) {
+      case 'clear':
+        return 'assets/sunny.json';
+      case 'clouds':
+        return 'assets/cloudy.json';
+      case 'rain':
+        return 'assets/rainy.json';
+      case 'snow':
+        return 'assets/snowy.json';
+      case 'thunderstorm':
+        return 'assets/thunderstorm.json';
+      case 'mist':
+      case 'fog':
+        return 'assets/foggy.json';
+      default:
+        return 'assets/sunny.json'; // Default animation for unknown condition
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center, // Corrected property name
-            children: [
-              // Display city name or "loading city.." if data is not available
-              Text(_weather?.cityname ?? "loading city.."),
-
-              //Animation
-
-              Lottie.asset('assets/foggy.json'),
-
-              // Display temperature in degrees Celsius or an empty string if data is not available
-              Text('${_weather?.temperature?.round() ?? ""}°C'),
-            ],
-          )
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(_weather?.cityname ?? "loading city.."),
+            // Displaying weather animation based on the weather condition
+            Lottie.asset(getWeatherAnimation(_weather?.maincondition)),
+            Text('${_weather?.temperature?.round() ?? ""}°C'),
+          ],
+        ),
       ),
     );
   }
